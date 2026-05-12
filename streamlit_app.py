@@ -8,7 +8,7 @@ import os
 
 # --- 1. 頁面設定與本地圖示讀取 ---
 # 尋找與此程式碼同資料夾下的 icon.png
-icon_path = "icon2.png"
+icon_path = "icon3.png"
 
 if os.path.exists(icon_path):
     try:
@@ -30,7 +30,7 @@ st.set_page_config(
 
 # 這裡必須使用「網址」形式，手機瀏覽器才能在離線或外部抓取到圖示
 # 請確保這個 GitHub 連結是有效的
-icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon2.png"
+icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon3.png"
 
 st.markdown(f"""
     <head>
