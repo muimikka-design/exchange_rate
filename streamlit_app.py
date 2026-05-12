@@ -1,16 +1,21 @@
 import streamlit as st
 import requests
-import pandas as pd
-import plotly.graph_objects as go
-import numpy as np
+from PIL import Image
+from io import BytesIO
 
-# --- 1. 設定與圖示 ---
-# 確保網址末端沒有任何空白字元
+# 確保網址正確且無空格
 APP_ICON_URL = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon.png"
 
+# 嘗試下載圖片並轉換為 PIL 物件
+try:
+    response = requests.get(APP_ICON_URL)
+    img = Image.open(BytesIO(response.content))
+except:
+    img = "💰" # 如果下載失敗，用 Emoji 墊後
+
 st.set_page_config(
-    page_title="即時匯率換算系統", 
-    page_icon=APP_ICON_URL,  # 這裡會顯示在瀏覽器分頁標籤
+    page_title="即時匯率換算系統",
+    page_icon=img, # 傳入圖片物件
     layout="wide"
 )
 
