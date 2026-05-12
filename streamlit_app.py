@@ -25,6 +25,31 @@ st.set_page_config(
     layout="wide"
 )
 
+
+# --- 手機版 Icon 注入 (放在 st.set_page_config 之後) ---
+
+# 這裡必須使用「網址」形式，手機瀏覽器才能在離線或外部抓取到圖示
+# 請確保這個 GitHub 連結是有效的
+icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon.png"
+
+st.markdown(f"""
+    <head>
+        <!-- iOS 設備專用 -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{icon_url}">
+        <!-- Android 與 Chrome 專用 -->
+        <link rel="icon" sizes="192x192" href="{icon_url}">
+        <!-- 設定 APP 名稱 -->
+        <meta name="apple-mobile-web-app-title" content="匯率換算">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    """, unsafe_allow_html=True)
+
+
+
+
+
+
+
 # --- 2. 取得匯率資料的函數 ---
 @st.cache_data(ttl=3600)
 def get_exchange_rates():
