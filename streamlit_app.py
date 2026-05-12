@@ -8,7 +8,7 @@ import os
 
 # --- 1. 頁面設定與本地圖示讀取 ---
 # 尋找與此程式碼同資料夾下的 icon.png
-icon_path = "icon.png"
+icon_path = "icon2.png"
 
 if os.path.exists(icon_path):
     try:
