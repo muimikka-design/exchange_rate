@@ -6,39 +6,32 @@ import numpy as np
 from PIL import Image
 import os
 
-# --- 1. 頁面設定與本地圖示讀取 ---
-# 尋找與此程式碼同資料夾下的 icon.png
+# --- 1. 頁面設定 (本地讀取確保 Favicon 穩定) ---
 icon_path = "icon3.png"
 
 if os.path.exists(icon_path):
     try:
         app_icon = Image.open(icon_path)
-    except Exception:
-        app_icon = "💰"  # 如果圖片損壞，使用 Emoji 備案
+    except:
+        app_icon = "💰"
 else:
-    app_icon = "💰"  # 如果沒找到檔案，使用 Emoji 備案
+    app_icon = "💰"
 
-# st.set_page_config 必須是第一個執行的 Streamlit 指令
 st.set_page_config(
     page_title="即時匯率換算系統",
-    page_icon=app_icon,
+    page_icon=app_icon, # 這負責電腦版的圖示
     layout="wide"
 )
 
-
-# --- 手機版 Icon 注入 (放在 st.set_page_config 之後) ---
-
-# 這裡必須使用「網址」形式，手機瀏覽器才能在離線或外部抓取到圖示
-# 請確保這個 GitHub 連結是有效的
-# 修改這行
-icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon3.png?v=1"
+# --- 2. 手機版 Icon 注入 (移除重複的 rel="icon" 避免衝突) ---
+icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon3.png?v=2"
 
 st.markdown(f"""
     <head>
+        <!-- 只注入手機專用標籤，不干擾網頁版標籤 -->
         <link rel="apple-touch-icon" sizes="180x180" href="{icon_url}">
-        <link rel="icon" type="image/png" sizes="192x192" href="{icon_url}">
-        <!-- 針對 Android 的 PWA 優化 -->
-        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="匯率換算">
     </head>
     """, unsafe_allow_html=True)
