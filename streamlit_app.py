@@ -14,37 +14,29 @@ def get_icon_base64(path):
 
 icon_path = "icon3.png"
 
-# --- 1. 頁面設定 (本地讀取確保 Favicon 穩定) ---
-icon_path = "icon3.png"
-
+# --- 1. 頁面設定 ---
 if os.path.exists(icon_path):
-    try:
-        app_icon = Image.open(icon_path)
-    except:
-        app_icon = "💰"
+    app_icon = Image.open(icon_path)
 else:
     app_icon = "💰"
 
 st.set_page_config(
     page_title="即時匯率換算系統",
-    page_icon=app_icon, # 這負責電腦版的圖示
+    page_icon=app_icon,
     layout="wide"
 )
 
-# --- 2. 手機版 Icon 注入 (移除重複的 rel="icon" 避免衝突) ---
-icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon3.png?v=2"
-
-st.markdown(f"""
-    <head>
-        <!-- 只注入手機專用標籤，不干擾網頁版標籤 -->
-        <link rel="apple-touch-icon" sizes="180x180" href="{icon_url}">
+# --- 2. 手機版 Icon 注入（用 base64，不依賴外部 URL）---
+if os.path.exists(icon_path):
+    icon_b64 = get_icon_base64(icon_path)
+    st.markdown(f"""
+        <link rel="apple-touch-icon" sizes="180x180" 
+              href="data:image/png;base64,{icon_b64}">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="匯率換算">
-    </head>
     """, unsafe_allow_html=True)
 
-
+# --- 後續程式碼不變 ---
 
 
 
