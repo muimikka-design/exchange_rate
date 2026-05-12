@@ -4,10 +4,31 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
-# 設定頁面寬度為寬版模式
-st.set_page_config(page_title="即時匯率換算系統", layout="wide")
+# --- PWA 與圖示設定 ---
+# 1. 準備圖示 URL (建議使用 512x512 的 PNG 檔案)
+# 你可以將 icon.png 放在 GitHub 倉庫根目錄，URL 則指向 raw 連結
+APP_ICON_URL = "https://png.pngtree.com/png-vector/20190124/ourlarge/pngtree-coin-currency-dollar-renminbi-png-image_550933.jpg
+" 
 
-# 自定義 CSS 以美化區塊（例如增加陰影或圓角）
+# 設定頁面資訊
+st.set_page_config(
+    page_title="即時匯率換算系統", 
+    page_icon=APP_ICON_URL, # 這裡設定網頁分頁標籤的 Icon
+    layout="wide"
+)
+
+# 2. 注入 PWA 相關 Meta 標籤 (讓手機「加入主畫面」時顯示正確圖示與標題)
+st.markdown(f"""
+    <head>
+        <link rel="apple-touch-icon" href="{APP_ICON_URL}">
+        <link rel="icon" href="{APP_ICON_URL}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="匯率換算">
+    </head>
+    """, unsafe_allow_html=True)
+
+# 自定義 CSS 以美化區塊
 st.markdown("""
     <style>
     .main {
@@ -21,10 +42,9 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # 1. 取得匯率資料的函數
-@st.cache_data(ttl=3600)  # 快取一小時，避免重複請求
+@st.cache_data(ttl=3600)
 def get_exchange_rates():
     try:
-        # 以 USD 為基準獲取所有匯率
         response = requests.get("https://open.er-api.com/v6/latest/USD")
         data = response.json()
         if data["result"] == "success":
@@ -36,7 +56,6 @@ def get_exchange_rates():
 
 # 2. 繪製趨勢圖的函數
 def plot_trend_chart(currency_code, rate):
-    # 產生模擬數據 (因為免費 API 僅提供當前值)
     x = list(range(24))
     y = [rate * (1 + np.random.uniform(-0.002, 0.002)) for _ in range(24)]
     y[-1] = rate
@@ -60,28 +79,23 @@ st.title("💱 即時匯率換算 & 趨勢監控系統")
 rates = get_exchange_rates()
 
 if rates:
-    # 基礎匯率數值
     twd_r = rates.get('TWD', 32.5)
     jpy_r = rates.get('JPY', 155.0)
     cny_r = rates.get('CNY', 7.2)
-    usd_r = 1.0
-
-    # 換算比例
+    
     jpy_to_cny = cny_r / jpy_r
     jpy_to_twd = twd_r / jpy_r
     cny_to_twd = twd_r / cny_r
 
-    # 使用 columns 分為左 (2/3) 與右 (1/3)
     col_left, col_right = st.columns([2, 1])
 
     with col_left:
         st.subheader("🧮 換算計算器")
         
-        # 第一組：日幣 -> 人民幣 -> 台幣
         st.write("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            jpy_1 = st.number_input("(輸入金額) 日幣 JPY", value=1.0, key="jpy1")
+            jpy_1 = st.number_input("(輸入金額) 日幣 JPY", value=1000.0, key="jpy1")
         with c2:
             st.write("(自動運算) 人民幣 CNY")
             st.info(f"{jpy_1 * jpy_to_cny:,.2f}")
@@ -89,29 +103,26 @@ if rates:
             st.write("(自動運算) 台幣 TWD")
             st.info(f"{jpy_1 * jpy_to_twd:,.2f}")
 
-        # 第二組：日幣 -> 台幣
         st.write("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            jpy_2 = st.number_input("(輸入金額) 日幣 JPY", value=1.0, key="jpy2")
+            jpy_2 = st.number_input("(輸入金額) 日幣 JPY", value=1000.0, key="jpy2")
         with c2:
             st.write("(自動運算) 台幣 TWD")
             st.success(f"{jpy_2 * jpy_to_twd:,.2f}")
         with c3:
-            st.write("") # 保持空位
+            st.write("") 
 
-        # 第三組：人民幣 -> 台幣
         st.write("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            cny_3 = st.number_input("(輸入金額) 人民幣 CNY", value=1.0, key="cny3")
+            cny_3 = st.number_input("(輸入金額) 人民幣 CNY", value=100.0, key="cny3")
         with c2:
             st.write("(自動運算) 台幣 TWD")
             st.success(f"{cny_3 * cny_to_twd:,.2f}")
         with c3:
-            st.write("") # 保持空位
+            st.write("") 
 
-        # 表格部分
         st.write("### 📊 即時匯率 (表格)")
         df_data = {
             "幣別": ["美金 (USD)", "台幣 (TWD)", "日幣 (JPY)", "人民幣 (CNY)"],
@@ -121,11 +132,9 @@ if rates:
 
     with col_right:
         st.subheader("📈 即時匯率 (曲線)")
-        # 依序顯示圖表
         st.plotly_chart(plot_trend_chart("TWD", twd_r), use_container_width=True)
         st.plotly_chart(plot_trend_chart("JPY", jpy_r), use_container_width=True)
         st.plotly_chart(plot_trend_chart("CNY", cny_r), use_container_width=True)
         st.plotly_chart(plot_trend_chart("USD", 1.0), use_container_width=True)
-
 else:
     st.error("暫時無法取得即時數據，請檢查網路連線。")
