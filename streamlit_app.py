@@ -7,8 +7,7 @@ import numpy as np
 # --- PWA 與圖示設定 ---
 # 1. 準備圖示 URL (建議使用 512x512 的 PNG 檔案)
 # 你可以將 icon.png 放在 GitHub 倉庫根目錄，URL 則指向 raw 連結
-APP_ICON_URL = "https://png.pngtree.com/png-vector/20190124/ourlarge/pngtree-coin-currency-dollar-renminbi-png-image_550933.jpg
-" 
+APP_ICON_URL = "https://png.pngtree.com/png-vector/20190124/ourlarge/pngtree-coin-currency-dollar-renminbi-png-image_550933.jpg" 
 
 # 設定頁面資訊
 st.set_page_config(
