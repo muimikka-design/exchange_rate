@@ -27,15 +27,30 @@ st.set_page_config(
 )
 
 # --- 2. 手機版 Icon 注入（用 base64，不依賴外部 URL）---
+
+
+def get_icon_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
 if os.path.exists(icon_path):
     icon_b64 = get_icon_base64(icon_path)
     st.markdown(f"""
-        <link rel="apple-touch-icon" sizes="180x180" 
-              href="data:image/png;base64,{icon_b64}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-title" content="匯率換算">
-    """, unsafe_allow_html=True)
+        <script>
+            (function() {{
+                // 移除舊的 apple-touch-icon（如果有）
+                var existing = document.querySelector('link[rel="apple-touch-icon"]');
+                if (existing) existing.remove();
 
+                // 動態建立並注入到真正的 <head>
+                var link = document.createElement('link');
+                link.rel = 'apple-touch-icon';
+                link.sizes = '180x180';
+                link.href = 'data:image/png;base64,{icon_b64}';
+                document.head.appendChild(link);
+            }})();
+        </script>
+    """, unsafe_allow_html=True)
 # --- 後續程式碼不變 ---
 
 
