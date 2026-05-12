@@ -96,7 +96,7 @@ with gr.Blocks(css=".container { max-width: 1200px; margin: auto; }") as demo:
             
             # 第一組：日幣 -> 人民幣 -> 台幣 (3格)
             with gr.Row():
-                jpy_val_1 = gr.Number(label="(輸入金額) 日幣 JPY", value=1000, interactive=True)
+                jpy_val_1 = gr.Number(label="(輸入金額) 日幣 JPY", value=1, interactive=True)
                 cny_res_1 = gr.Number(label="(自動運算) 人民幣 CNY", interactive=False)
                 twd_res_1 = gr.Number(label="(自動運算) 台幣 TWD", interactive=False)
             
@@ -104,7 +104,7 @@ with gr.Blocks(css=".container { max-width: 1200px; margin: auto; }") as demo:
             
             # 第二組：日幣 -> 台幣 (為了對齊，第三格放空白)
             with gr.Row():
-                jpy_val_2 = gr.Number(label="(輸入金額) 日幣 JPY", value=1000, interactive=True)
+                jpy_val_2 = gr.Number(label="(輸入金額) 日幣 JPY", value=1, interactive=True)
                 twd_res_2 = gr.Number(label="(自動運算) 台幣 TWD", interactive=False)
                 gr.Markdown("") # 替代 Placeholder 用於對齊
                 
@@ -112,7 +112,7 @@ with gr.Blocks(css=".container { max-width: 1200px; margin: auto; }") as demo:
             
             # 第三組：人民幣 -> 台幣 (為了對齊，第三格放空白)
             with gr.Row():
-                cny_val_3 = gr.Number(label="(輸入金額) 人民幣 CNY", value=100, interactive=True)
+                cny_val_3 = gr.Number(label="(輸入金額) 人民幣 CNY", value=1, interactive=True)
                 twd_res_3 = gr.Number(label="(自動運算) 台幣 TWD", interactive=False)
                 gr.Markdown("") # 替代 Placeholder 用於對齊
             
