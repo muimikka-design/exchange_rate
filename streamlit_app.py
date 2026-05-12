@@ -37,7 +37,7 @@ st.markdown(f"""
         <!-- iOS 設備專用 -->
         <link rel="apple-touch-icon" sizes="180x180" href="{icon_url}">
         <!-- Android 與 Chrome 專用 -->
-        <link rel="icon" sizes="192x192" href="{icon_url}">
+        <link rel="icon" sizes="1024x1024" href="{icon_url}">
         <!-- 設定 APP 名稱 -->
         <meta name="apple-mobile-web-app-title" content="匯率換算">
         <meta name="apple-mobile-web-app-capable" content="yes">
