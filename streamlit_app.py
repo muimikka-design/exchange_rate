@@ -95,7 +95,7 @@ if rates:
         st.write("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            jpy_1 = st.number_input("(輸入金額) 日幣 JPY", value=1000.0, key="jpy1")
+            jpy_1 = st.number_input("(輸入金額) 日幣 JPY", value=10.0, key="jpy1")
         with c2:
             st.write("(自動運算) 人民幣 CNY")
             st.info(f"{jpy_1 * jpy_to_cny:,.2f}")
@@ -106,7 +106,7 @@ if rates:
         st.write("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            jpy_2 = st.number_input("(輸入金額) 日幣 JPY", value=1000.0, key="jpy2")
+            jpy_2 = st.number_input("(輸入金額) 日幣 JPY", value=10.0, key="jpy2")
         with c2:
             st.write("(自動運算) 台幣 TWD")
             st.success(f"{jpy_2 * jpy_to_twd:,.2f}")
@@ -116,7 +116,7 @@ if rates:
         st.write("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            cny_3 = st.number_input("(輸入金額) 人民幣 CNY", value=100.0, key="cny3")
+            cny_3 = st.number_input("(輸入金額) 人民幣 CNY", value=10.0, key="cny3")
         with c2:
             st.write("(自動運算) 台幣 TWD")
             st.success(f"{cny_3 * cny_to_twd:,.2f}")
