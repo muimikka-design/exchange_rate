@@ -30,7 +30,7 @@ st.set_page_config(
 
 # 這裡必須使用「網址」形式，手機瀏覽器才能在離線或外部抓取到圖示
 # 請確保這個 GitHub 連結是有效的
-icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon.png"
+icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon2.png"
 
 st.markdown(f"""
     <head>
