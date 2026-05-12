@@ -3,19 +3,28 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-# 確保網址正確且無空格
+# 圖片 URL
 APP_ICON_URL = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon.png"
 
-# 嘗試下載圖片並轉換為 PIL 物件
-try:
-    response = requests.get(APP_ICON_URL)
-    img = Image.open(BytesIO(response.content))
-except:
-    img = "💰" # 如果下載失敗，用 Emoji 墊後
+# --- 強制轉換圖片格式 ---
+def get_icon(url):
+    try:
+        # 設定 timeout 避免卡死，stream=True 加速下載
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            return Image.open(BytesIO(response.content))
+    except Exception:
+        pass
+    return "💰" # 備用方案
+
+# 執行轉換
+app_icon = get_icon(APP_ICON_URL)
+
+
 
 st.set_page_config(
     page_title="即時匯率換算系統",
-    page_icon=img, # 傳入圖片物件
+    page_icon=app_icon, # 此處不再傳入字串，而是傳入圖片物件
     layout="wide"
 )
 
