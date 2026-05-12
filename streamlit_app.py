@@ -30,17 +30,16 @@ st.set_page_config(
 
 # 這裡必須使用「網址」形式，手機瀏覽器才能在離線或外部抓取到圖示
 # 請確保這個 GitHub 連結是有效的
-icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon3.png"
+# 修改這行
+icon_url = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon3.png?v=1"
 
 st.markdown(f"""
     <head>
-        <!-- iOS 設備專用 -->
         <link rel="apple-touch-icon" sizes="180x180" href="{icon_url}">
-        <!-- Android 與 Chrome 專用 -->
-        <link rel="icon" sizes="1024x1024" href="{icon_url}">
-        <!-- 設定 APP 名稱 -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{icon_url}">
+        <!-- 針對 Android 的 PWA 優化 -->
+        <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="匯率換算">
-        <meta name="apple-mobile-web-app-capable" content="yes">
     </head>
     """, unsafe_allow_html=True)
 
