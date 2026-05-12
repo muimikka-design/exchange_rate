@@ -4,33 +4,32 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 from PIL import Image
-from io import BytesIO
+import os
 
-# --- 1. 圖示與頁面設定 ---
-APP_ICON_URL = "https://raw.githubusercontent.com/muimikka/exchange_rate/main/icon.png"
+# --- 1. 頁面設定與本地圖示讀取 ---
+# 尋找與此程式碼同資料夾下的 icon.png
+icon_path = "icon.png"
 
-def get_icon(url):
+if os.path.exists(icon_path):
     try:
-        # 增加 headers 模擬瀏覽器，避免被 GitHub 拒絕
-        res = requests.get(url, timeout=5)
-        if res.status_code == 200:
-            return Image.open(BytesIO(res.content))
-    except:
-        pass
-    return "💰"
+        app_icon = Image.open(icon_path)
+    except Exception:
+        app_icon = "💰"  # 如果圖片損壞，使用 Emoji 備案
+else:
+    app_icon = "💰"  # 如果沒找到檔案，使用 Emoji 備案
 
-# 必須是第一個 Streamlit 指令
-app_icon = get_icon(APP_ICON_URL)
+# st.set_page_config 必須是第一個執行的 Streamlit 指令
 st.set_page_config(
     page_title="即時匯率換算系統",
     page_icon=app_icon,
     layout="wide"
 )
 
-# --- 2. 取得匯率函數 ---
+# --- 2. 取得匯率資料的函數 ---
 @st.cache_data(ttl=3600)
 def get_exchange_rates():
     try:
+        # 使用 Open Exchange Rates 的免費 API 介面
         response = requests.get("https://open.er-api.com/v6/latest/USD", timeout=5)
         data = response.json()
         if data.get("result") == "success":
@@ -39,15 +38,17 @@ def get_exchange_rates():
         st.error(f"匯率 API 連線失敗: {e}")
     return None
 
-# --- 3. 趨勢圖函數 ---
+# --- 3. 繪製模擬趨勢圖 ---
 def plot_trend_chart(currency_code, rate):
     x = list(range(24))
+    # 這裡是用隨機數模擬當日波動，僅供視覺參考
     y = [rate * (1 + np.random.uniform(-0.002, 0.002)) for _ in range(24)]
     y[-1] = rate
+    
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x, y=y, mode='lines', line=dict(color='#636EFA', width=2)))
     fig.update_layout(
-        title=f"{currency_code} 趨勢 (對美金)",
+        title=f"{currency_code} 近 24h 參考趨勢",
         height=180,
         margin=dict(l=10, r=10, t=40, b=10),
         xaxis=dict(showticklabels=False, showgrid=False),
@@ -57,13 +58,13 @@ def plot_trend_chart(currency_code, rate):
     )
     return fig
 
-# --- 主要 UI 介面 ---
-st.title("💱 即時匯率換算 & 趨勢監控")
+# --- 主要 UI 開始 ---
+st.title("💱 即時匯率換算系統")
 
 rates = get_exchange_rates()
 
 if rates:
-    # 安全地取得匯率，若不存在則給預設值
+    # 取得關鍵幣別匯率（對美金）
     twd_r = rates.get('TWD', 32.5)
     jpy_r = rates.get('JPY', 155.0)
     cny_r = rates.get('CNY', 7.2)
@@ -73,52 +74,57 @@ if rates:
     jpy_to_twd = twd_r / jpy_r
     cny_to_twd = twd_r / cny_r
 
+    # 畫面佈局：左側計算器，右側趨勢圖
     col_left, col_right = st.columns([2, 1])
 
     with col_left:
-        st.subheader("🧮 換算計算器")
+        st.subheader("🧮 快速換算")
         
-        # 區塊 1: JPY 轉 CNY/TWD
-        st.write("---")
+        # 第一組：日幣轉台幣/人民幣
+        st.markdown("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            jpy_input1 = st.number_input("日幣 JPY", value=1000.0, step=100.0, key="n1")
+            val_jpy1 = st.number_input("輸入日幣 (JPY)", value=1000.0, step=100.0, key="input_jpy1")
         with c2:
-            st.write("人民幣 CNY")
-            st.info(f"{jpy_input1 * jpy_to_cny:,.2f}")
+            st.write("換算人民幣 (CNY)")
+            st.info(f"¥ {val_jpy1 * jpy_to_cny:,.2f}")
         with c3:
-            st.write("台幣 TWD")
-            st.info(f"{jpy_input1 * jpy_to_twd:,.2f}")
+            st.write("換算台幣 (TWD)")
+            st.info(f"NT$ {val_jpy1 * jpy_to_twd:,.2f}")
 
-        # 區塊 2: JPY 轉 TWD
-        st.write("---")
+        # 第二組：人民幣轉台幣
+        st.markdown("---")
         c1, c2, c3 = st.columns(3)
         with c1:
-            jpy_input2 = st.number_input("日幣 JPY ", value=1000.0, step=100.0, key="n2")
+            val_cny = st.number_input("輸入人民幣 (CNY)", value=100.0, step=10.0, key="input_cny")
         with c2:
-            st.write("台幣 TWD ")
-            st.success(f"{jpy_input2 * jpy_to_twd:,.2f}")
+            st.write("換算台幣 (TWD)")
+            st.success(f"NT$ {val_cny * cny_to_twd:,.2f}")
+        with c3:
+            st.empty()
 
-        # 區塊 3: CNY 轉 TWD
-        st.write("---")
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            cny_input = st.number_input("人民幣 CNY", value=100.0, step=10.0, key="n3")
-        with c2:
-            st.write("台幣 TWD  ")
-            st.success(f"{cny_input * cny_to_twd:,.2f}")
-
-        # 表格區塊：確保清單長度絕對相等
-        st.write("### 📊 即時匯率對照")
-        df_data = pd.DataFrame({
-            "幣別": ["美金 (USD)", "台幣 (TWD)", "日幣 (JPY)", "人民幣 (CNY)"],
-            "對美金匯率": [1.0, round(twd_r, 4), round(jpy_r, 4), round(cny_r, 4)]
+        # 匯率對照表
+        st.write("### 📊 目前匯率對照 (對美金)")
+        table_df = pd.DataFrame({
+            "幣別名稱": ["美金 (USD)", "台幣 (TWD)", "日幣 (JPY)", "人民幣 (CNY)"],
+            "匯率數值": [1.0, round(twd_r, 4), round(jpy_r, 4), round(cny_r, 4)]
         })
-        st.table(df_data)
+        st.table(table_df)
 
     with col_right:
-        st.subheader("📈 參考趨勢")
-        for code, r in [("TWD", twd_r), ("JPY", jpy_r), ("CNY", cny_r)]:
-            st.plotly_chart(plot_trend_chart(code, r), use_container_width=True)
+        st.subheader("📈 幣別監控")
+        # 顯示各幣別趨勢圖
+        st.plotly_chart(plot_trend_chart("TWD", twd_r), use_container_width=True)
+        st.plotly_chart(plot_trend_chart("JPY", jpy_r), use_container_width=True)
+        st.plotly_chart(plot_trend_chart("CNY", cny_r), use_container_width=True)
+
 else:
-    st.error("目前無法載入資料，請檢查網路連線或 API 狀態。")
+    st.error("無法連接到匯率服務，請稍後再試。")
+
+# 注入 CSS 輕微美化
+st.markdown("""
+    <style>
+    .stNumberInput label { font-size: 1.1rem; color: #1f77b4; }
+    .stInfo, .stSuccess { font-size: 1.2rem; font-weight: bold; }
+    </style>
+    """, unsafe_allow_html=True)
